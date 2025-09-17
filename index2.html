@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arío Tours - Una Experiencia Ecuestre Inolvidable en Costa Rica</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- GSAP (GreenSock Animation Platform) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- Flatpickr (para el selector de fecha) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <!-- Fuentes de Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Raleway:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-primary: #2C3E50; /* Un azul oscuro y serio, como el anochecer en la finca */
+            --color-secondary: #E0E0DB; /* Un color arena suave, como la playa de Ario */
+            --color-accent: #E67E22; /* Un naranja atardecer, para llamados a la acción */
+            --color-text: #34495E; /* Un gris azulado para el texto principal */
+            --color-light-bg: #FDFDFB; /* Un blanco roto para fondos limpios */
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden; /* Evita el scroll global */
+        }
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            background-color: var(--color-light-bg);
+            color: var(--color-text);
+        }
+
+        h1, h2, h3, .font-display {
+            font-family: 'Playfair Display', serif;
+            color: var(--color-primary);
+        }
+
+        .hero-text-shadow {
+            text-shadow: 0px 2px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 3px;
+            background-color: var(--color-accent);
+            margin-top: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--color-accent);
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary:hover {
+            background-color: #D35400;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        
+        #header.scrolled {
+            background-color: rgba(253, 253, 251, 0.9);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        #header.on-hero .nav-link:not(.btn-primary) {
+            color: white;
+        }
+        #header.on-hero .nav-link:not(.btn-primary):hover {
+            color: #ddd;
+        }
+         #header.on-hero #cart-icon, #header.on-hero #mobile-menu-btn {
+            color: white;
+        }
+
+        /* Estilo para el enlace de navegación activo */
+        .nav-link.active:not(.btn-primary) {
+            color: var(--color-accent) !important;
+            font-weight: 700;
+        }
+        .nav-link.btn-primary.active {
+            color: white !important;
+            background-color: var(--color-primary) !important; /* Azul oscuro */
+            font-weight: 700;
+        }
+        
+        .flatpickr-calendar {
+            font-family: 'Raleway', sans-serif;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+        }
+        .flatpickr-day.selected, .flatpickr-day.selected:hover {
+            background: var(--color-accent);
+            border-color: var(--color-accent);
+        }
+        .flatpickr-day:hover {
+             background: #f0f0f0;
+        }
+
+        main {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .page-section {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            visibility: hidden;
+            overflow-y: auto;
+            padding-top: 100px; /* Espacio para el header */
+        }
+        .page-section.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        #hero { padding-top: 0; }
+        
+        .experience-card {
+             box-shadow: 0 10px 25px rgba(44, 62, 80, 0.1);
+             cursor: pointer;
+        }
+        .experience-card-image-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+        .experience-card-image {
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .experience-card:hover .experience-card-image {
+            transform: scale(1.05);
+        }
+        .experience-card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
+        }
+
+        #mobile-menu, #cart-panel {
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        
+        #cart-icon::after {
+            content: attr(data-count);
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background-color: var(--color-accent);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
+            transform: scale(0);
+            transition: transform 0.2s ease-out;
+        }
+        #cart-icon.has-items::after {
+            transform: scale(1);
+        }
+
+        /* Carousel mejorado */
+        .carousel-wrapper {
+            position: relative;
+        }
+        .carousel-container {
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none; /* Firefox */
+        }
+        .carousel-container::-webkit-scrollbar {
+            display: none; /* Safari, Chrome */
+        }
+        .carousel-item {
+            scroll-snap-align: center;
+        }
+        .carousel-dot {
+            width: 12px;
+            height: 12px;
+            background-color: #ccc;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+        .carousel-dot.active {
+            background-color: var(--color-accent);
+        }
+        .carousel-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(2px);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            color: var(--color-primary);
+            z-index: 10;
+        }
+        .carousel-arrow:hover {
+            background-color: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        /* Checkout steps */
+        .checkout-step {
+            display: none;
+        }
+        .checkout-step.active {
+            display: block;
+        }
+        .checkout-progress-bar {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .checkout-progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #e0e0e0;
+            transform: translateY(-50%);
+            z-index: -1;
+        }
+        .checkout-progress-bar-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: 2px;
+            background-color: var(--color-accent);
+            transform: translateY(-50%);
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+        .progress-step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: white;
+            border: 2px solid #e0e0e0;
+            transition: all 0.4s ease;
+        }
+        .progress-step.active {
+            border-color: var(--color-accent);
+            background-color: var(--color-accent);
+            color: white;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Header -->
+    <header id="header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" data-target="hero" class="nav-link flex items-center space-x-2">
+                <img src="https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1455907833422-LM8DQNU14U73URMCS2J8/Ario+Tours.png?format=1500w" alt="Logo Arío Tours" class="h-12 w-auto">
+                <span class="font-display text-2xl font-bold text-gray-800">Arío</span>
+            </a>
+            <div class="flex items-center">
+                <nav id="desktop-nav" class="hidden md:flex space-x-8 items-center mr-8">
+                    <a href="#" data-target="experiencias" class="nav-link text-gray-600 hover:text-var-color-primary transition-colors">Experiencias</a>
+                    <a href="#" data-target="hacienda-detail" class="nav-link text-gray-600 hover:text-var-color-primary transition-colors">La Finca</a>
+                    <a href="#" data-target="equipo" class="nav-link text-gray-600 hover:text-var-color-primary transition-colors">Nuestro Equipo</a>
+                    <a href="#" data-target="caballos" class="nav-link text-gray-600 hover:text-var-color-primary transition-colors">Nuestros Caballos</a>
+                    <a href="#" data-target="contact" class="nav-link text-gray-600 hover:text-var-color-primary transition-colors">Contáctanos</a>
+                    <a href="#" data-target="booking" class="nav-link btn-primary px-6 py-2 rounded-full font-bold">Reservar</a>
+                </nav>
+                <button id="cart-icon" class="relative text-gray-600 hover:text-var-color-primary mr-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                </button>
+                <button id="mobile-menu-btn" class="md:hidden text-var-color-primary z-50">
+                    <svg id="menu-open-icon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                    <svg id="menu-close-icon" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden fixed inset-0 bg-white z-40 transform -translate-x-full flex flex-col items-center justify-center space-y-8">
+        <a href="#" data-target="experiencias" class="nav-link text-3xl font-bold text-gray-700">Experiencias</a>
+        <a href="#" data-target="hacienda-detail" class="nav-link text-3xl font-bold text-gray-700">La Finca</a>
+        <a href="#" data-target="equipo" class="nav-link text-3xl font-bold text-gray-700">Nuestro Equipo</a>
+        <a href="#" data-target="caballos" class="nav-link text-3xl font-bold text-gray-700">Nuestros Caballos</a>
+        <a href="#" data-target="contact" class="nav-link text-3xl font-bold text-gray-700">Contáctanos</a>
+        <a href="#" data-target="booking" class="nav-link text-3xl font-bold text-gray-700">Reservar Ahora</a>
+    </div>
+
+    <!-- Shopping Cart Panel -->
+    <div id="cart-panel" class="fixed top-0 right-0 h-full w-full max-w-md bg-white z-50 shadow-2xl transform translate-x-full">
+        <div class="flex flex-col h-full">
+            <div class="flex justify-between items-center p-6 border-b">
+                <h2 class="text-2xl font-bold font-display">Carrito de Compras</h2>
+                <button id="close-cart-btn" class="text-3xl text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div id="cart-items" class="flex-grow p-6 space-y-4 overflow-y-auto">
+                <p id="empty-cart-msg" class="text-gray-500">Tu carrito está vacío.</p>
+            </div>
+            <div class="p-6 border-t">
+                <div class="flex justify-between items-center text-xl font-bold">
+                    <span>Total:</span>
+                    <span id="cart-total">$0.00</span>
+                </div>
+                <button id="checkout-btn" class="mt-4 w-full btn-primary py-3 rounded-full font-bold">Proceder al Pago</button>
+            </div>
+        </div>
+    </div>
+    <div id="cart-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+
+
+    <!-- Main Content Wrapper -->
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" data-page="hero" class="page-section active relative h-full flex items-center justify-center text-white">
+            <div class="absolute inset-0 bg-black opacity-40 z-10"></div>
+            <img src="https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1456531137356-4HPK65IQ502AIHAKM8Z4/%C2%A9+UVE_2225.jpg" alt="Vaquero cabalgando en la playa de Costa Rica" class="absolute inset-0 w-full h-full object-cover">
+            <div class="relative z-20 text-center px-4">
+                <h1 class="text-5xl md:text-7xl font-extrabold hero-text-shadow leading-tight text-white">Más que un Tour, una Invitación a Nuestro Mundo.</h1>
+                <p class="mt-4 text-xl md:text-2xl max-w-3xl mx-auto hero-text-shadow">Explore 4,700 acres de naturaleza privada en el corazón de la Zona Azul de Costa Rica.</p>
+                <a href="#" data-target="experiencias" class="nav-link mt-8 inline-block btn-primary px-10 py-4 rounded-full text-lg font-bold">Descubrir Experiencias</a>
+            </div>
+             <footer class="absolute bottom-0 w-full bg-transparent text-white py-8">
+                <div class="container mx-auto px-6 text-center">
+                    <p class="text-sm text-gray-300 opacity-70">&copy; <span id="year-hero"></span> Arío Tours. Todos los derechos reservados. Rediseñado por Appex Arquitecto Digital.</p>
+                </div>
+            </footer>
+        </section>
+
+        <!-- Experiencias Section -->
+        <section id="experiencias" data-page="experiencias" class="page-section bg-var-color-light-bg">
+            <div class="container mx-auto px-6 py-20">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="section-title text-4xl md:text-5xl font-bold inline-block">Nuestras Experiencias</h2>
+                    <p class="mt-8 text-lg text-gray-600 leading-relaxed">Hemos abandonado las categorías de "grupal" o "privado" para crear aventuras que apelan a tu espíritu. Cada cabalgata es una historia diferente. Elige la tuya.</p>
+                </div>
+                <div class="mt-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                    <div data-tour-id="paseo-sereno" class="experience-card bg-white rounded-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                        <div class="experience-card-image-wrapper h-64"><img src="https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1456528040648-N51EF81CENKTV8YYN41X/V58A0301_6384.jpg" alt="Caballos en una playa tranquila" class="experience-card-image w-full h-full object-cover"><div class="experience-card-overlay"></div><div class="absolute bottom-0 left-0 p-6 text-white"><h3 class="font-display text-3xl font-bold text-white">El Paseo Sereno</h3></div></div>
+                        <div class="p-8"><p class="text-gray-600 mb-6">Ideal para parejas y principiantes. Una cabalgata tranquila por la playa desierta y los serenos esteros de manglar.</p><button class="mt-6 w-full btn-primary py-3 rounded-full font-bold">Ver Detalles</button></div>
+                    </div>
+                    <div data-tour-id="legado-sabanero" class="experience-card bg-white rounded-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                        <div class="experience-card-image-wrapper h-64"><img src="https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1456528045566-CBN5M3L0HJT6EKSQ3DU7/V58A0522.jpg" alt="Vaquero arreando ganado" class="experience-card-image w-full h-full object-cover"><div class="experience-card-overlay"></div><div class="absolute bottom-0 left-0 p-6 text-white"><h3 class="font-display text-3xl font-bold text-white">El Legado del Sabanero</h3></div></div>
+                        <div class="p-8"><p class="text-gray-600 mb-6">Una inmersión cultural. Acompaña a nuestros sabaneros en un arreo de ganado real y vive la auténtica cultura vaquera.</p><button class="mt-6 w-full btn-primary py-3 rounded-full font-bold">Ver Detalles</button></div>
+                    </div>
+                    <div data-tour-id="explorador-finca" class="experience-card bg-white rounded-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                        <div class="experience-card-image-wrapper h-64"><img src="https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1492803871997-PS3YEXY6YNSSOERPEL8L/V58A0311_6393.jpg" alt="Familia a caballo por el campo" class="experience-card-image w-full h-full object-cover"><div class="experience-card-overlay"></div><div class="absolute bottom-0 left-0 p-6 text-white"><h3 class="font-display text-3xl font-bold text-white">El Explorador de la Finca</h3></div></div>
+                        <div class="p-8"><p class="text-gray-600 mb-6">La aventura familiar perfecta. Un recorrido por los valles y colinas del rancho, cruzando ríos y descubriendo la fauna.</p><button class="mt-6 w-full btn-primary py-3 rounded-full font-bold">Ver Detalles</button></div>
+                    </div>
+                </div>
+            </div>
+            <footer class="bg-var-color-primary text-var-color-secondary py-8 mt-20">
+                <div class="container mx-auto px-6 text-center">
+                    <p class="text-sm text-gray-400">&copy; <span id="year-exp"></span> Arío Tours. Todos los derechos reservados. Rediseñado por Appex Arquitecto Digital.</p>
+                </div>
+            </footer>
+        </section>
+
+        <!-- Hacienda Ario Detail Section -->
+        <section id="hacienda-detail" data-page="hacienda-detail" class="page-section bg-var-color-light-bg">
+            <div class="container mx-auto px-6 py-20">
+                <div class="max-w-4xl mx-auto">
+                    <div class="text-center mb-16">
+                        <h2 class="section-title text-5xl md:text-6xl font-bold inline-block">Hacienda Arío: El Alma de la Experiencia</h2>
+                        <p class="mt-8 text-lg text-gray-600 leading-relaxed">Arío no es solo el escenario de nuestros tours; es el corazón y el alma de todo lo que hacemos. Una herencia familiar de 1925 hectáreas (4700 acres) en el corazón de la Península de Nicoya, una de las cinco "Zonas Azules" del mundo. Aquí, la vida fluye a un ritmo diferente, uno dictado por la naturaleza, las mareas y el trabajo de nuestra gente.</p>
+                    </div>
+
+                    <div class="mb-16">
+                        <img src="https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1456531434053-BFK5N5EMA9G5C3PCICU1/%C2%A9+UVE_1507.jpg" alt="Vista panorámica de la Hacienda Ario" class="w-full h-auto object-cover rounded-lg shadow-2xl">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
+                        <div>
+                            <h3 class="text-3xl font-bold mb-4">Nuestra Historia: Un Legado Familiar</h3>
+                            <p class="text-gray-700 leading-relaxed">La historia de Hacienda Arío está tejida en el tejido de la Península de Nicoya. Por generaciones, nuestra familia ha sido custodio de esta tierra, practicando una ganadería que respeta los ciclos naturales y preserva la rica cultura sabanera. Creemos que la tierra no nos pertenece; nosotros pertenecemos a la tierra. Esta filosofía guía cada decisión que tomamos, desde la cría de nuestro ganado hasta la forma en que compartimos este paraíso con ustedes.</p>
+                        </div>
+                        <img src="https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1456528054385-BEJT8ESKA8ZPKBKKQQVX/V58A0507.jpg" alt="Sabanero de Arío" class="rounded-lg shadow-xl">
+                    </div>
+                    
+                    <div class="text-center mb-16">
+                        <h3 class="text-3xl font-bold mb-4">Conservación: Nuestro Compromiso Sagrado</h3>
+                        <p class="text-gray-700 leading-relaxed max-w-3xl mx-auto">Ser los guardianes de uno de los corredores biológicos más importantes de la costa del Pacífico es una responsabilidad que tomamos en serio. Protegemos activamente los manglares, reforestamos cuencas hidrográficas y mantenemos vastas áreas de bosque primario intactas. Al elegir Arío, no solo estás reservando un tour; estás apoyando directamente la conservación de este ecosistema vital para las generaciones futuras.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <img src="https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1456532379544-JNB0JT0U9NYJQA9QO5D2/%C2%A9+UVE_1847.jpg" class="rounded-lg shadow-lg aspect-square object-cover" alt="Bosque de la finca">
+                        <img src="https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1456531800848-DFX4UCCPTC3YCRS2CXBP/%C2%A9+UVE_1947.jpg" class="rounded-lg shadow-lg aspect-square object-cover" alt="Río de la finca">
+                        <img src="https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1456528266637-LZ060ZOEKB7ZPPDUJHZL/V58A0300_6383.jpg" class="rounded-lg shadow-lg aspect-square object-cover" alt="Playa de la finca">
+                    </div>
+                </div>
+            </div>
+            <footer class="bg-var-color-primary text-var-color-secondary py-8 mt-20">
+                <div class="container mx-auto px-6 text-center">
+                    <p class="text-sm text-gray-400">&copy; <span id="year-hac-det"></span> Arío Tours. Todos los derechos reservados. Rediseñado por Appex Arquitecto Digital.</p>
+                </div>
+            </footer>
+        </section>
+
+        <!-- Nuestro Equipo Section -->
+        <section id="equipo" data-page="equipo" class="page-section bg-var-color-secondary">
+            <div class="container mx-auto px-6 py-20">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="section-title text-4xl md:text-5xl font-bold inline-block">La Familia Arío</h2>
+                    <p class="mt-8 text-lg text-gray-600 leading-relaxed">Más que un equipo, somos una familia unida por la pasión por esta tierra y nuestros caballos. Estos son los rostros que hacen de tu visita una experiencia inolvidable, compartiendo su conocimiento y su amor por la cultura sabanera.</p>
+                </div>
+                <div class="mt-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12">
+                    <div class="team-card text-center">
+                        <div class="rounded-full overflow-hidden w-48 h-48 mx-auto border-4 border-white shadow-lg">
+                            <img src="https://placehold.co/200x200/2C3E50/E0E0DB?text=Manuel" alt="Retrato de Manuel" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="mt-4 text-2xl font-bold font-display">Manuel</h3>
+                        <p class="font-bold text-var-color-accent">Jefe de Sabaneros</p>
+                        <p class="text-gray-500 mt-2">Nacido y criado en la finca, Manuel conoce cada sendero y cada secreto de Arío. Su sabiduría y calma son la guía perfecta en cada aventura.</p>
+                    </div>
+                    <div class="team-card text-center">
+                        <div class="rounded-full overflow-hidden w-48 h-48 mx-auto border-4 border-white shadow-lg">
+                            <img src="https://placehold.co/200x200/E0E0DB/2C3E50?text=Elena" alt="Retrato de Elena" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="mt-4 text-2xl font-bold font-display">Elena</h3>
+                        <p class="font-bold text-var-color-accent">Guía Principal y Bióloga</p>
+                        <p class="text-gray-500 mt-2">Con una pasión contagiosa por la flora y fauna, Elena convierte cada tour en una fascinante lección de historia natural.</p>
+                    </div>
+                    <div class="team-card text-center">
+                        <div class="rounded-full overflow-hidden w-48 h-48 mx-auto border-4 border-white shadow-lg">
+                            <img src="https://placehold.co/200x200/2C3E50/E0E0DB?text=Carlos" alt="Retrato de Carlos" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="mt-4 text-2xl font-bold font-display">Carlos</h3>
+                        <p class="font-bold text-var-color-accent">Coordinador de Experiencias</p>
+                        <p class="text-gray-500 mt-2">La primera sonrisa que te recibe. Carlos se asegura de que cada detalle de tu visita sea perfecto, desde la reserva hasta la despedida.</p>
+                    </div>
+                </div>
+            </div>
+            <footer class="bg-var-color-primary text-var-color-secondary py-8 mt-20">
+                <div class="container mx-auto px-6 text-center">
+                    <p class="text-sm text-gray-400">&copy; <span id="year-equipo"></span> Arío Tours. Todos los derechos reservados. Rediseñado por Appex Arquitecto Digital.</p>
+                </div>
+            </footer>
+        </section>
+
+        <!-- Nuestros Caballos Section -->
+        <section id="caballos" data-page="caballos" class="page-section bg-var-color-light-bg">
+             <div class="container mx-auto px-6 py-20"><div class="text-center max-w-3xl mx-auto"><h2 class="section-title text-4xl md:text-5xl font-bold inline-block">Conoce a la Manada</h2><p class="mt-8 text-lg text-gray-600 leading-relaxed">Nuestros caballos no son equipo, son familia. Nacidos, criados y entrenados en la finca, forman una manada de 95 almas, de las cuales seleccionamos los 16 más dóciles y seguros para nuestros huéspedes. Su bienestar es nuestra máxima prioridad, y su confianza, nuestra mayor recompensa.</p></div><div class="mt-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"><div class="horse-card text-center"><div class="rounded-full overflow-hidden w-48 h-48 mx-auto border-4 border-white shadow-lg"><img src="https://placehold.co/200x200/E0E0DB/2C3E50?text=Gitano" alt="Retrato del caballo Gitano" class="w-full h-full object-cover"></div><h3 class="mt-4 text-2xl font-bold font-display">Gitano</h3><p class="text-gray-500">Nuestro criollo de paso seguro. Ideal para explorar senderos y el favorito para un buen rasguño detrás de las orejas.</p></div><div class="horse-card text-center"><div class="rounded-full overflow-hidden w-48 h-48 mx-auto border-4 border-white shadow-lg"><img src="https://placehold.co/200x200/2C3E50/E0E0DB?text=Luna" alt="Retrato del caballo Luna" class="w-full h-full object-cover"></div><h3 class="mt-4 text-2xl font-bold font-display">Luna</h3><p class="text-gray-500">Una yegua noble y gentil. Perfecta para jinetes primerizos y niños por su carácter tranquilo y paciente.</p></div><div class="horse-card text-center"><div class="rounded-full overflow-hidden w-48 h-48 mx-auto border-4 border-white shadow-lg"><img src="https://placehold.co/200x200/E0E0DB/2C3E50?text=Relámpago" alt="Retrato del caballo Relámpago" class="w-full h-full object-cover"></div><h3 class="mt-4 text-2xl font-bold font-display">Relámpago</h3><p class="text-gray-500">El líder del grupo. Un caballo fuerte y enérgico para los jinetes más experimentados que buscan una aventura.</p></div><div class="horse-card text-center"><div class="rounded-full overflow-hidden w-48 h-48 mx-auto border-4 border-white shadow-lg"><img src="https://placehold.co/200x200/2C3E50/E0E0DB?text=Estrella" alt="Retrato del caballo Estrella" class="w-full h-full object-cover"></div><h3 class="mt-4 text-2xl font-bold font-display">Estrella</h3><p class="text-gray-500">Curiosa y amigable. Le encanta posar para las fotos y es la compañera ideal para un paseo por la playa.</p></div></div></div>
+            <footer class="bg-var-color-primary text-var-color-secondary py-8 mt-20">
+                <div class="container mx-auto px-6 text-center">
+                    <p class="text-sm text-gray-400">&copy; <span id="year-cab"></span> Arío Tours. Todos los derechos reservados. Rediseñado por Appex Arquitecto Digital.</p>
+                </div>
+            </footer>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" data-page="contact" class="page-section bg-var-color-light-bg">
+            <div class="container mx-auto px-6 py-20">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="section-title text-4xl md:text-5xl font-bold inline-block">Contáctanos</h2>
+                    <p class="mt-8 text-lg text-gray-600 leading-relaxed">¿Listo para la aventura o tienes alguna pregunta? Estamos aquí para ayudarte a planificar tu experiencia perfecta. ¡Nos encantaría saber de ti!</p>
+                </div>
+                <div class="mt-20 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 bg-white p-8 rounded-lg shadow-xl">
+                    <div class="flex flex-col justify-center">
+                        <h3 class="text-2xl font-bold mb-6">Información de Contacto</h3>
+                        <a href="https://wa.me/50684471239" target="_blank" class="flex items-center space-x-4 text-lg text-gray-700 hover:text-var-color-accent transition-colors mb-4">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.433-9.89-9.889-9.89-5.452 0-9.887 4.434-9.889 9.888.001 2.228.651 4.39 1.899 6.27l-1.232 4.495 4.61-1.212z"/></svg>
+                            <span>+(506) 8447 1239</span>
+                        </a>
+                        <a href="mailto:arioensenada@gmail.com" class="flex items-center space-x-4 text-lg text-gray-700 hover:text-var-color-accent transition-colors mb-8">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                            <span>arioensenada@gmail.com</span>
+                        </a>
+                        <div class="flex space-x-6">
+                            <a href="https://www.facebook.com/arioranch/" target="_blank" class="text-gray-500 hover:text-var-color-primary transition-colors"><svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0h-21.35C.59 0 0 .59 0 1.325v21.351C0 23.41.59 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.735 0 1.325-.59 1.325-1.325V1.325C24 .59 23.41 0 22.675 0z"/></svg></a>
+                            <a href="https://www.instagram.com/ariotours/" target="_blank" class="text-gray-500 hover:text-var-color-primary transition-colors"><svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.585-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.585-.012-4.85-.07c-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85s.012-3.584.07-4.85c.149-3.227 1.664-4.771 4.919-4.919C8.415 2.175 8.796 2.163 12 2.163m0-2.163C8.74 0 8.333.011 7.053.069 2.59.284 0 2.59 0 7.053c-.058 1.281-.069 1.688-.069 4.947s.011 3.666.069 4.947c.216 4.462 2.523 6.78 7.053 6.994 1.28.058 1.688.069 4.947.069s3.667-.011 4.947-.069c4.532-.213 6.84-2.533 7.054-6.994.058-1.281.069-1.688.069-4.947s-.011-3.666-.069-4.947C21.409 2.59 19.093.284 14.947.069 13.667.011 13.26 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88z"/></svg></a>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-xl h-96">
+                        <iframe src="https://maps.google.com/maps?q=9.705971585164486,-85.21072128382568&hl=es&z=14&amp;output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+            <footer class="bg-var-color-primary text-var-color-secondary py-8 mt-20">
+                <div class="container mx-auto px-6 text-center">
+                    <p class="text-sm text-gray-400">&copy; <span id="year-contact"></span> Arío Tours. Todos los derechos reservados. Rediseñado por Appex Arquitecto Digital.</p>
+                </div>
+            </footer>
+        </section>
+        
+        <!-- Booking Section GENERAL -->
+        <section id="booking" data-page="booking" class="page-section bg-var-color-light-bg flex flex-col justify-center">
+             <div class="container mx-auto px-6 py-20 flex-grow"><div class="text-center max-w-3xl mx-auto"><h2 class="section-title text-4xl md:text-5xl font-bold inline-block">Reserva tu Aventura</h2><p class="mt-8 text-lg text-gray-600 leading-relaxed">Asegura tu espacio en el paraíso. Nuestro nuevo sistema de reservas te permite planificar tu experiencia de forma fácil y segura. La confirmación es instantánea.</p></div><div class="mt-16 max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-xl shadow-2xl"><form id="booking-form"><div id="step-1"><h3 class="text-2xl font-bold mb-6">1. Elige tu Experiencia</h3><div class="space-y-4"><select id="tour-select" name="tour" class="w-full p-4 border border-gray-300 rounded-lg text-lg focus:ring-2 focus:ring-var-color-accent focus:border-var-color-accent"><option value="" data-price="0">Selecciona un tour...</option><option value="Paseo Sereno" data-price="75">El Paseo Sereno por la Playa y el Estero</option><option value="Legado del Sabanero" data-price="130">El Legado del Sabanero (Inmersión Cultural)</option><option value="Explorador de la Finca" data-price="90">El Explorador de la Finca (Aventura Familiar)</option></select></div></div><div id="step-2" class="mt-8"><h3 class="text-2xl font-bold mb-6">2. ¿Cuándo y Cuántos?</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div><label for="booking-date" class="block text-sm font-bold text-gray-700 mb-2">Fecha</label><input type="text" id="booking-date" name="date" placeholder="Selecciona una fecha" class="w-full p-4 border border-gray-300 rounded-lg text-lg focus:ring-2 focus:ring-var-color-accent focus:border-var-color-accent"></div><div><label for="rider-count" class="block text-sm font-bold text-gray-700 mb-2">Jinetes</label><input type="number" id="rider-count" name="riders" value="1" min="1" max="10" class="w-full p-4 border border-gray-300 rounded-lg text-lg focus:ring-2 focus:ring-var-color-accent focus:border-var-color-accent"></div></div></div><div id="summary" class="mt-10 pt-6 border-t border-gray-200"><h3 class="text-2xl font-bold mb-4">Resumen de tu Reserva</h3><div class="space-y-2 text-lg"><p><strong>Tour:</strong> <span id="summary-tour">--</span></p><p><strong>Total:</strong> <span id="summary-total" class="font-bold text-2xl text-var-color-primary">$0.00</span></p></div></div><div class="mt-8"><button type="submit" class="w-full btn-primary py-4 rounded-full text-xl font-bold">Agregar al Carrito</button><p id="form-message" class="text-center mt-4 text-green-600 font-bold"></p></div></form></div></div>
+            <footer class="bg-var-color-primary text-var-color-secondary py-8 mt-16 w-full">
+                <div class="container mx-auto px-6 text-center">
+                    <p class="text-sm text-gray-400">&copy; <span id="year-book"></span> Arío Tours. Todos los derechos reservados. Rediseñado por Appex Arquitecto Digital.</p>
+                </div>
+            </footer>
+        </section>
+
+        <!-- Service Detail Page Section -->
+        <section id="service-detail" data-page="service-detail" class="page-section bg-white">
+            <div class="container mx-auto px-6 py-12 md:py-20">
+                <button id="back-to-experiencias" class="font-bold text-gray-600 mb-8">&larr; Volver a Experiencias</button>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <!-- Carousel -->
+                    <div class="flex flex-col">
+                        <div class="carousel-wrapper">
+                            <div id="detail-carousel" class="carousel-container flex overflow-x-auto snap-x snap-mandatory rounded-lg shadow-lg">
+                                <!-- Carousel images will be injected here -->
+                            </div>
+                            <button id="carousel-prev" class="carousel-arrow left-4"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>
+                            <button id="carousel-next" class="carousel-arrow right-4"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></button>
+                        </div>
+                         <div id="carousel-dots" class="flex justify-center space-x-3 mt-4">
+                            <!-- Dots will be injected here -->
+                         </div>
+                    </div>
+                    <!-- Details & Booking -->
+                    <div>
+                        <h2 id="detail-title" class="text-4xl md:text-5xl font-bold"></h2>
+                        <p id="detail-price" class="text-2xl text-var-color-accent my-4 font-bold"></p>
+                        <div id="detail-story" class="text-lg text-gray-700 leading-relaxed space-y-4"></div>
+                        
+                        <div class="mt-8 pt-8 border-t">
+                            <h3 class="text-2xl font-bold mb-4">Reserva esta Experiencia</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="detail-date" class="block text-sm font-bold text-gray-700 mb-2">Fecha</label>
+                                    <input type="text" id="detail-date" placeholder="Selecciona una fecha" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-var-color-accent">
+                                </div>
+                                <div>
+                                    <label for="detail-riders" class="block text-sm font-bold text-gray-700 mb-2">Jinetes</label>
+                                    <input type="number" id="detail-riders" value="1" min="1" max="10" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-var-color-accent">
+                                </div>
+                            </div>
+                            <div class="mt-6 flex justify-between items-center text-xl font-bold">
+                                <span>Total:</span>
+                                <span id="detail-total-price">$0.00</span>
+                            </div>
+                            <button id="add-to-cart-btn" class="mt-6 w-full btn-primary py-4 rounded-full text-xl font-bold">Agregar al Carrito</button>
+                             <p id="detail-form-message" class="text-center mt-4 text-green-600 font-bold"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <footer class="bg-var-color-primary text-var-color-secondary py-8 mt-20">
+                <div class="container mx-auto px-6 text-center">
+                    <p class="text-sm text-gray-400">&copy; <span id="year-det"></span> Arío Tours. Todos los derechos reservados. Rediseñado por Appex Arquitecto Digital.</p>
+                </div>
+            </footer>
+        </section>
+
+        <!-- Checkout Page Section -->
+        <section id="checkout" data-page="checkout" class="page-section bg-gray-50 flex flex-col justify-center">
+            <div class="container mx-auto px-6 py-20 flex-grow">
+                <div class="max-w-3xl mx-auto">
+                    <div class="text-center"><h2 class="text-4xl md:text-5xl font-bold">Finalizar Reserva</h2><p class="mt-4 text-lg text-gray-600">Casi listo. Solo necesitamos algunos detalles para confirmar tu aventura.</p></div>
+                    
+                    <div class="mt-12 bg-white p-8 md:p-12 rounded-xl shadow-2xl">
+                        <!-- Progress Bar -->
+                        <div class="checkout-progress-bar">
+                             <div class="checkout-progress-bar-line"></div>
+                             <div class="progress-step active flex items-center justify-center">1</div>
+                             <div class="progress-step flex items-center justify-center">2</div>
+                             <div class="progress-step flex items-center justify-center">3</div>
+                        </div>
+
+                        <div id="checkout-steps-container">
+                            <!-- Step 1: Personal Info -->
+                            <div class="checkout-step active" data-step="1">
+                                <h3 class="text-2xl font-bold mb-6">1. Tu Información</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div><label for="firstName" class="block text-sm font-bold text-gray-700 mb-2">Nombre</label><input type="text" id="firstName" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-var-color-accent"></div>
+                                    <div><label for="lastName" class="block text-sm font-bold text-gray-700 mb-2">Apellidos</label><input type="text" id="lastName" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-var-color-accent"></div>
+                                    <div><label for="email" class="block text-sm font-bold text-gray-700 mb-2">Email</label><input type="email" id="email" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-var-color-accent"></div>
+                                    <div><label for="phone" class="block text-sm font-bold text-gray-700 mb-2">Teléfono</label><input type="tel" id="phone" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-var-color-accent"></div>
+                                </div>
+                                <h4 class="text-xl font-bold mt-8 mb-4">Preguntas Esenciales</h4>
+                                <div>
+                                    <label for="experienceLevel" class="block text-sm font-bold text-gray-700 mb-2">Nivel de experiencia a caballo (todos los jinetes)</label>
+                                    <select id="experienceLevel" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-var-color-accent">
+                                        <option>Principiante (Primera vez o pocas veces)</option>
+                                        <option>Intermedio (Cómodo al trote)</option>
+                                        <option>Avanzado (Cómodo en todos los aires, incluyendo galope)</option>
+                                    </select>
+                                </div>
+                                <div class="mt-4">
+                                    <label for="specialRequests" class="block text-sm font-bold text-gray-700 mb-2">¿Alguna alergia, condición médica o solicitud especial a considerar?</label>
+                                    <textarea id="specialRequests" rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-var-color-accent"></textarea>
+                                </div>
+                                <div class="mt-8 flex justify-end">
+                                    <button type="button" class="next-step-btn btn-primary py-3 px-8 rounded-full font-bold">Siguiente</button>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Payment -->
+                            <div class="checkout-step" data-step="2">
+                                <h3 class="text-2xl font-bold mb-6">2. Información de Pago</h3>
+                                 <div class="space-y-6">
+                                     <div><label for="cardName" class="block text-sm font-bold text-gray-700 mb-2">Nombre en la Tarjeta</label><input type="text" id="cardName" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-var-color-accent" placeholder="Como aparece en la tarjeta"></div>
+                                     <div><label for="cardNumber" class="block text-sm font-bold text-gray-700 mb-2">Número de Tarjeta</label><input type="text" id="cardNumber" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-var-color-accent" placeholder="0000 0000 0000 0000"></div>
+                                     <div class="grid grid-cols-2 gap-6">
+                                         <div><label for="cardExpiry" class="block text-sm font-bold text-gray-700 mb-2">Fecha de Vencimiento</label><input type="text" id="cardExpiry" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-var-color-accent" placeholder="MM/AA"></div>
+                                         <div><label for="cardCVC" class="block text-sm font-bold text-gray-700 mb-2">CVC</label><input type="text" id="cardCVC" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-var-color-accent" placeholder="123"></div>
+                                     </div>
+                                </div>
+                                <div class="mt-8 flex justify-between">
+                                    <button type="button" class="prev-step-btn font-bold text-gray-600">Anterior</button>
+                                    <button type="button" class="next-step-btn btn-primary py-3 px-8 rounded-full font-bold">Revisar Pedido</button>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Confirmation -->
+                            <div class="checkout-step" data-step="3">
+                                 <h3 class="text-2xl font-bold mb-6">3. Confirmar y Pagar</h3>
+                                 <div id="checkout-summary" class="bg-gray-50 p-6 rounded-lg border">
+                                    <!-- Summary will be injected here -->
+                                 </div>
+                                 <div class="mt-8 flex justify-between items-center">
+                                    <button type="button" class="prev-step-btn font-bold text-gray-600">Anterior</button>
+                                    <button id="confirm-purchase-btn" type="button" class="btn-primary py-3 px-8 rounded-full font-bold flex items-center">
+                                        <span id="confirm-btn-text">Confirmar y Pagar</span>
+                                        <svg id="confirm-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Step 4: Success Message -->
+                            <div class="checkout-step text-center" data-step="4">
+                               <svg class="w-24 h-24 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                               <h3 class="text-3xl font-bold">¡Reserva Confirmada!</h3>
+                               <p class="text-lg text-gray-600 mt-4">¡Gracias! Hemos enviado un correo de confirmación a tu email. Nos vemos pronto en la finca para una aventura inolvidable.</p>
+                               <button id="back-to-home-btn" class="mt-8 btn-primary py-3 px-8 rounded-full font-bold">Volver al Inicio</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="bg-var-color-primary text-var-color-secondary py-8 w-full">
+                <div class="container mx-auto px-6 text-center">
+                    <p class="text-sm text-gray-400">&copy; <span id="year-checkout"></span> Arío Tours. Todos los derechos reservados. Rediseñado por Appex Arquitecto Digital.</p>
+                </div>
+            </footer>
+        </section>
+
+
+    </main>
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        let currentPageId = 'hero';
+        let isTransitioning = false;
+        let cartItems = [];
+        const tourData = {
+            'paseo-sereno': {
+                name: 'El Paseo Sereno', price: 75,
+                story: `<p>Esta es la esencia de la paz en la Península de Nicoya. Comenzamos en la tranquilidad del rancho para luego emerger en la inmensidad de la Playa Arío, una franja de arena dorada solo para nosotros. Cabalgaremos al ritmo de las olas, sintiendo la brisa del Pacífico, para luego adentrarnos en los místicos esteros de manglares, un santuario de vida silvestre. Es una experiencia contemplativa, perfecta para reconectar contigo mismo y la naturaleza.</p><p class="mt-4"><strong>Incluye:</strong> Guía bilingüe, sabanero, agua embotellada, y frutas frescas.</p><p class="mt-2"><strong>Qué esperar:</strong> Un ritmo relajado, paisajes espectaculares y la posibilidad de avistar aves acuáticas y monos.</p>`,
+                images: ['https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1456528040648-N51EF81CENKTV8YYN41X/V58A0301_6384.jpg', 'https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1456528266637-LZ060ZOEKB7ZPPDUJHZL/V58A0300_6383.jpg', 'https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1456531800848-DFX4UCCPTC3YCRS2CXBP/%C2%A©+UVE_1947.jpg']
+            },
+            'legado-sabanero': {
+                name: 'El Legado del Sabanero', price: 130,
+                story: `<p>Esta no es una simulación. Es una invitación a ser parte de nuestra herencia. Te unirás a nuestros sabaneros, los legendarios vaqueros de Costa Rica, en su trabajo diario: arrear el ganado a través de las vastas llanuras de la hacienda. Aprenderás sus técnicas, escucharás sus historias y compartirás con ellos un almuerzo tradicional costarricense en el rancho. Es un desafío, una lección de historia y una experiencia de vida.</p><p class="mt-4"><strong>Incluye:</strong> Guía bilingüe, sabanero experto, almuerzo típico completo, café y snacks.</p><p class="mt-2"><strong>Qué esperar:</strong> Una cabalgata activa y emocionante, trabajo en equipo y una inmersión cultural profunda.</p>`,
+                images: ['https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1456528045566-CBN5M3L0HJT6EKSQ3DU7/V58A0522.jpg', 'https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1456527938341-1IRZH7OWJU6AG6CCSX8T/cattle+1_11x17.JPG', 'https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1456529111805-EQTY1FGH4RX2F4T1SQ6A/V58A9934_6065.jpg']
+            },
+            'explorador-finca': {
+                name: 'El Explorador de la Finca', price: 90,
+                story: `<p>Descubre los secretos mejor guardados de nuestras 4,700 acres. Esta aventura te llevará por senderos que serpentean a través de colinas con vistas panorámicas al océano, para luego descender a valles frondosos donde cruzaremos ríos cristalinos. Es la expedición perfecta para familias y amantes de la naturaleza, una oportunidad para desconectar del mundo y maravillarse con la increíble biodiversidad de la hacienda.</p><p class="mt-4"><strong>Incluye:</strong> Tour privado, guía bilingüe, sabanero, agua embotellada.</p><p class="mt-2"><strong>Qué esperar:</strong> Vistas impresionantes, cruces de río divertidos y un ambiente de exploración y descubrimiento.</p>`,
+                images: ['https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1492803871997-PS3YEXY6YNSSOERPEL8L/V58A0311_6393.jpg', 'https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1456531675809-3DR3KVYU0QM77FI4FADB/DSC01968.JPG', 'https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1456528204142-6GTITJX34T6CG20PD4SR/V58A0349_6428.jpg']
+            }
+        };
+        
+        const header = document.getElementById('header');
+        const allNavLinks = document.querySelectorAll('.nav-link');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuOpenIcon = document.getElementById('menu-open-icon');
+        const menuCloseIcon = document.getElementById('menu-close-icon');
+        const cartIcon = document.getElementById('cart-icon');
+        const cartPanel = document.getElementById('cart-panel');
+        const cartOverlay = document.getElementById('cart-overlay');
+        const closeCartBtn = document.getElementById('close-cart-btn');
+        const cartItemsContainer = document.getElementById('cart-items');
+        const emptyCartMsg = document.getElementById('empty-cart-msg');
+        const cartTotalEl = document.getElementById('cart-total');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const detailCarousel = document.getElementById('detail-carousel');
+        const detailCarouselDots = document.getElementById('carousel-dots');
+        let carouselObserver;
+
+        function updateActiveNavLink(targetId) {
+            allNavLinks.forEach(link => {
+                const linkTarget = link.dataset.target;
+                if (linkTarget === targetId || (linkTarget === 'hacienda-detail' && targetId.startsWith('hacienda'))) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        function pageTransition(targetId, data) {
+            if (isTransitioning) return;
+            isTransitioning = true;
+            
+            const currentPage = document.querySelector('.page-section.active');
+            const targetPage = document.querySelector(`[data-page="${targetId}"]`);
+
+            if (!targetPage) {
+                isTransitioning = false;
+                return;
+            }
+
+            if (targetId === 'service-detail' && data) populateServiceDetail(data);
+            if (targetId === 'checkout') populateCheckoutSummary();
+            
+            updateActiveNavLink(targetId);
+            header.classList.toggle('on-hero', targetId === 'hero');
+            header.classList.toggle('scrolled', targetId !== 'hero');
+
+            const tl = gsap.timeline({
+                onComplete: () => {
+                    if (currentPage) currentPage.classList.remove('active');
+                    targetPage.classList.add('active');
+                    currentPageId = targetId;
+                    isTransitioning = false;
+                    
+                    targetPage.scrollTop = 0;
+                }
+            });
+            
+            if (currentPage) {
+                 tl.to(currentPage, { opacity: 0, duration: 0.4, ease: 'power2.inOut' });
+            }
+           
+            tl.fromTo(targetPage, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.inOut' }, currentPage ? "-=0.2" : "+=0");
+        }
+
+        allNavLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = e.currentTarget.dataset.target;
+                pageTransition(targetId);
+                if(mobileMenu.classList.contains('translate-x-0')) toggleMobileMenu();
+            });
+        });
+
+        document.querySelectorAll('.experience-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const tourId = card.dataset.tourId;
+                pageTransition('service-detail', { tourId });
+            });
+        });
+        
+        document.getElementById('back-to-experiencias').addEventListener('click', () => pageTransition('experiencias'));
+        document.getElementById('back-to-home-btn').addEventListener('click', () => pageTransition('hero'));
+
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('translate-x-0');
+            mobileMenu.classList.toggle('-translate-x-full');
+            menuOpenIcon.classList.toggle('hidden');
+            menuCloseIcon.classList.toggle('hidden');
+        }
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+
+        function toggleCart(forceClose = false) {
+            if (forceClose) {
+                cartPanel.classList.add('translate-x-full');
+                cartOverlay.classList.add('hidden');
+            } else {
+                cartPanel.classList.toggle('translate-x-full');
+                cartOverlay.classList.toggle('hidden');
+            }
+        }
+
+        function updateCartUI() {
+            cartItemsContainer.innerHTML = '';
+            if (cartItems.length === 0) {
+                cartItemsContainer.appendChild(emptyCartMsg);
+                emptyCartMsg.style.display = 'block';
+                cartIcon.classList.remove('has-items');
+                cartIcon.dataset.count = 0;
+                checkoutBtn.disabled = true;
+                checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                emptyCartMsg.style.display = 'none';
+                let total = 0;
+                cartItems.forEach((item, index) => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'flex justify-between items-start';
+                    itemEl.innerHTML = `<div><p class="font-bold">${item.name}</p><p class="text-sm text-gray-500">${item.date} - ${item.riders} jinete(s)</p><p class="text-sm font-semibold text-var-color-accent">$${item.total.toFixed(2)}</p></div><button class="text-red-500 hover:text-red-700 remove-from-cart" data-index="${index}">&times;</button>`;
+                    cartItemsContainer.appendChild(itemEl);
+                    total += item.total;
+                });
+                cartTotalEl.textContent = `$${total.toFixed(2)}`;
+                cartIcon.classList.add('has-items');
+                cartIcon.dataset.count = cartItems.length;
+                checkoutBtn.disabled = false;
+                checkoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+        
+        function addToCart(item) {
+            cartItems.push(item);
+            updateCartUI();
+        }
+
+        cartItemsContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-from-cart')) {
+                const index = parseInt(e.target.dataset.index);
+                cartItems.splice(index, 1);
+                updateCartUI();
+            }
+        });
+        
+        checkoutBtn.addEventListener('click', () => {
+            toggleCart(true); // Cierra el carrito
+            pageTransition('checkout');
+        });
+
+        cartIcon.addEventListener('click', () => toggleCart());
+        closeCartBtn.addEventListener('click', () => toggleCart());
+        cartOverlay.addEventListener('click', () => toggleCart());
+
+        const detailTitle = document.getElementById('detail-title');
+        const detailPrice = document.getElementById('detail-price');
+        const detailStory = document.getElementById('detail-story');
+        const detailDateInput = document.getElementById('detail-date');
+        const detailRidersInput = document.getElementById('detail-riders');
+        const detailTotalPrice = document.getElementById('detail-total-price');
+        const addToCartBtn = document.getElementById('add-to-cart-btn');
+        const detailFormMessage = document.getElementById('detail-form-message');
+        
+        let currentDetailTourId = null;
+
+        function updateCarouselDots(activeIndex) {
+            const dots = detailCarouselDots.querySelectorAll('.carousel-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === activeIndex);
+            });
+        }
+
+        function populateServiceDetail({ tourId }) {
+            const data = tourData[tourId];
+            if (!data) return;
+            
+            currentDetailTourId = tourId;
+            detailTitle.textContent = data.name;
+            detailPrice.textContent = `$${data.price} / persona`;
+            detailStory.innerHTML = data.story;
+            
+            detailCarousel.innerHTML = data.images.map((src, index) => `<img src="${src}" class="carousel-item w-full flex-shrink-0 object-cover rounded-lg" data-index="${index}" />`).join('');
+            detailCarouselDots.innerHTML = data.images.map((_, index) => `<button class="carousel-dot" data-index="${index}"></button>`).join('');
+
+            detailCarouselDots.querySelectorAll('.carousel-dot').forEach(dot => {
+                dot.addEventListener('click', () => {
+                    const index = dot.dataset.index;
+                    const targetImage = detailCarousel.querySelector(`.carousel-item[data-index="${index}"]`);
+                    targetImage.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+                });
+            });
+
+            if (carouselObserver) carouselObserver.disconnect();
+            carouselObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const index = parseInt(entry.target.dataset.index);
+                        updateCarouselDots(index);
+                    }
+                });
+            }, { root: detailCarousel, threshold: 0.5 });
+            detailCarousel.querySelectorAll('.carousel-item').forEach(item => carouselObserver.observe(item));
+
+            updateCarouselDots(0);
+            updateDetailPrice();
+        }
+
+        function updateDetailPrice() {
+            const data = tourData[currentDetailTourId];
+            if (!data) return;
+            const riders = parseInt(detailRidersInput.value) || 0;
+            const total = riders * data.price;
+            detailTotalPrice.textContent = `$${total.toFixed(2)}`;
+        }
+        
+        detailRidersInput.addEventListener('input', updateDetailPrice);
+        
+        addToCartBtn.addEventListener('click', () => {
+            const data = tourData[currentDetailTourId];
+            const date = detailDateInput.value;
+            const riders = parseInt(detailRidersInput.value);
+
+            if (!date || !riders || riders < 1) {
+                detailFormMessage.textContent = "Por favor, selecciona una fecha y número de jinetes.";
+                detailFormMessage.classList.add('text-red-600');
+                return;
+            }
+            
+            addToCart({ id: `${currentDetailTourId}-${date}`, name: data.name, date: date, riders: riders, total: riders * data.price });
+            
+            detailFormMessage.textContent = "¡Añadido al carrito!";
+            detailFormMessage.classList.remove('text-red-600');
+            detailFormMessage.classList.add('text-green-600');
+            setTimeout(() => { detailFormMessage.textContent = ""; toggleCart(); pageTransition('experiencias'); }, 1500);
+        });
+
+        document.getElementById('carousel-prev').addEventListener('click', () => {
+            detailCarousel.scrollBy({ left: -detailCarousel.offsetWidth, behavior: 'smooth' });
+        });
+        document.getElementById('carousel-next').addEventListener('click', () => {
+            detailCarousel.scrollBy({ left: detailCarousel.offsetWidth, behavior: 'smooth' });
+        });
+        
+        const bookingForm = document.getElementById('booking-form');
+        const formMessage = document.getElementById('form-message');
+        const tourSelect = document.getElementById('tour-select');
+        const riderCountInput = document.getElementById('rider-count');
+        const dateInput = document.getElementById('booking-date');
+        const summaryTour = document.getElementById('summary-tour');
+        const summaryTotal = document.getElementById('summary-total');
+
+        function updateGeneralBookingSummary() {
+            const selectedOption = tourSelect.options[tourSelect.selectedIndex];
+            const tourName = selectedOption.value;
+            const pricePerRider = parseFloat(selectedOption.dataset.price) || 0;
+            const riderCount = parseInt(riderCountInput.value) || 0;
+            const total = pricePerRider * riderCount;
+            summaryTour.textContent = tourName || '--';
+            summaryTotal.textContent = `$${total.toFixed(2)}`;
+        }
+
+        tourSelect.addEventListener('change', updateGeneralBookingSummary);
+        riderCountInput.addEventListener('input', updateGeneralBookingSummary);
+        
+        bookingForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const tourName = tourSelect.value;
+            const date = dateInput.value;
+            const riders = parseInt(riderCountInput.value);
+            const price = parseFloat(tourSelect.options[tourSelect.selectedIndex].dataset.price);
+
+            if (!tourName || !date || !riders || riders < 1) {
+                formMessage.textContent = "Por favor, completa todos los campos.";
+                formMessage.classList.add('text-red-600');
+                return;
+            }
+            
+            const tourId = Object.keys(tourData).find(key => tourData[key].name === tourName);
+            addToCart({ id: `${tourId}-${date}`, name: tourName, date: date, riders: riders, total: riders * price });
+            
+            formMessage.textContent = "¡Añadido al carrito!";
+            formMessage.classList.remove('text-red-600');
+            formMessage.classList.add('text-green-600');
+            setTimeout(() => { formMessage.textContent = ""; toggleCart(); }, 1500);
+        });
+        
+        flatpickr("#booking-date", { altInput: true, altFormat: "F j, Y", dateFormat: "Y-m-d", minDate: "today" });
+        flatpickr("#detail-date", { altInput: true, altFormat: "F j, Y", dateFormat: "Y-m-d", minDate: "today" });
+        
+        // --- Checkout Logic ---
+        const steps = document.querySelectorAll('.checkout-step');
+        const progressSteps = document.querySelectorAll('.progress-step');
+        const progressBarLine = document.querySelector('.checkout-progress-bar-line');
+        let currentStep = 1;
+
+        function goToStep(stepNumber) {
+            const currentStepEl = document.querySelector(`.checkout-step[data-step="${currentStep}"]`);
+            const targetStepEl = document.querySelector(`.checkout-step[data-step="${stepNumber}"]`);
+
+            gsap.timeline()
+                .to(currentStepEl, {opacity: 0, duration: 0.3, onComplete: () => currentStepEl.classList.remove('active')})
+                .to(targetStepEl, {opacity: 1, duration: 0.3, onStart: () => targetStepEl.classList.add('active')});
+
+            currentStep = stepNumber;
+            updateProgressBar();
+        }
+
+        function updateProgressBar() {
+            progressSteps.forEach((step, index) => {
+                if (index < currentStep) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+            const progress = ((currentStep - 1) / (steps.length - 2)) * 100;
+            progressBarLine.style.width = `${progress}%`;
+        }
+
+        document.querySelectorAll('.next-step-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if(currentStep < 4) goToStep(currentStep + 1);
+            });
+        });
+        document.querySelectorAll('.prev-step-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if(currentStep > 1) goToStep(currentStep - 1);
+            });
+        });
+
+        function populateCheckoutSummary() {
+             const summaryContainer = document.getElementById('checkout-summary');
+             let total = 0;
+             let summaryHTML = '<h4 class="text-xl font-bold mb-4">Resumen del Pedido</h4><div class="space-y-3">';
+             cartItems.forEach(item => {
+                 summaryHTML += `<div class="flex justify-between"><span class="text-gray-600">${item.name} (${item.riders} jinetes)</span><span class="font-semibold">$${item.total.toFixed(2)}</span></div>`;
+                 total += item.total;
+             });
+             summaryHTML += `</div><div class="mt-4 pt-4 border-t flex justify-between font-bold text-xl"><span class="text-gray-800">Total a Pagar</span><span>$${total.toFixed(2)}</span></div>`;
+             summaryContainer.innerHTML = summaryHTML;
+        }
+        
+        const confirmBtn = document.getElementById('confirm-purchase-btn');
+        const confirmBtnText = document.getElementById('confirm-btn-text');
+        const confirmSpinner = document.getElementById('confirm-spinner');
+
+        confirmBtn.addEventListener('click', () => {
+            confirmBtnText.classList.add('hidden');
+            confirmSpinner.classList.remove('hidden');
+            confirmBtn.disabled = true;
+
+            setTimeout(() => {
+                goToStep(4); // Go to success step
+                cartItems = []; // Clear cart
+                updateCartUI(); // Update UI
+            }, 2000);
+        });
+
+        const currentYear = new Date().getFullYear();
+        document.querySelectorAll('[id^="year-"]').forEach(span => span.textContent = currentYear);
+
+        updateGeneralBookingSummary();
+        updateCartUI();
+        
+        header.classList.add('on-hero');
+        updateActiveNavLink(currentPageId);
+    });
+    </script>
+
+</body>
+</html>
+
+
