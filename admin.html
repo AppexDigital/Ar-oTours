@@ -56,39 +56,44 @@
 </head>
 <body class="bg-main-bg" x-data="adminPanel()" x-init="init()">
 
-    <div class="flex h-screen">
+    <div class="relative min-h-screen md:flex">
+        <!-- Backdrop para sidebar móvil -->
+        <div x-show="isSidebarOpen" @click="isSidebarOpen = false" class="fixed inset-0 bg-black/60 z-20 md:hidden" x-cloak></div>
+
         <!-- Sidebar -->
-        <aside class="flex-shrink-0 bg-sidebar-bg text-white flex flex-col transition-all duration-300" :class="isSidebarOpen ? 'w-64' : 'w-20'">
-            <div class="flex items-center justify-center h-20 border-b border-gray-700">
+        <aside 
+            class="bg-sidebar-bg text-white flex flex-col fixed inset-y-0 left-0 z-30 transform transition-all duration-300 ease-in-out md:relative md:translate-x-0"
+            :class="isSidebarOpen ? 'w-64 translate-x-0' : 'w-20 -translate-x-full md:translate-x-0'">
+            <button @click="isSidebarOpen = !isSidebarOpen" class="flex items-center justify-center h-20 border-b border-gray-700 flex-shrink-0 w-full">
                 <img src="https://images.squarespace-cdn.com/content/v1/56c762638a65e21c8bdd4ee7/1455907833422-LM8DQNU14U73URMCS2J8/Ario+Tours.png?format=1500w" alt="Logo Arío" class="h-10 transition-all" :class="isSidebarOpen ? 'h-10' : 'h-8'">
                 <span x-show="isSidebarOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="font-display text-2xl ml-2">Arío</span>
-            </div>
-            <nav class="flex-1 px-4 py-6 space-y-2">
-                <a href="#" @click.prevent="activePage = 'dashboard'" class="sidebar-link flex items-center py-2 px-4 rounded-lg" :class="{ 'active': activePage === 'dashboard' }">
+            </button>
+            <nav class="flex-1 px-2 py-6 space-y-2 overflow-y-auto">
+                <a href="#" @click.prevent="changePage('dashboard')" class="sidebar-link flex items-center py-2 px-4 rounded-lg" :class="{ 'active': activePage === 'dashboard' }">
                     <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                     <span class="ml-3" x-show="isSidebarOpen">Dashboard</span>
                 </a>
-                <a href="#" @click.prevent="activePage = 'bookings'" class="sidebar-link flex items-center py-2 px-4 rounded-lg" :class="{ 'active': activePage === 'bookings' }">
+                <a href="#" @click.prevent="changePage('bookings')" class="sidebar-link flex items-center py-2 px-4 rounded-lg" :class="{ 'active': activePage === 'bookings' }">
                     <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     <span class="ml-3" x-show="isSidebarOpen">Reservas</span>
                 </a>
-                <a href="#" @click.prevent="activePage = 'content'" class="sidebar-link flex items-center py-2 px-4 rounded-lg" :class="{ 'active': activePage === 'content' }">
+                <a href="#" @click.prevent="changePage('content')" class="sidebar-link flex items-center py-2 px-4 rounded-lg" :class="{ 'active': activePage === 'content' }">
                     <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18"></path></svg>
                     <span class="ml-3" x-show="isSidebarOpen">Contenido Web</span>
                 </a>
-                <a href="#" @click.prevent="activePage = 'livestock'" class="sidebar-link flex items-center py-2 px-4 rounded-lg" :class="{ 'active': activePage === 'livestock' }">
+                <a href="#" @click.prevent="changePage('livestock')" class="sidebar-link flex items-center py-2 px-4 rounded-lg" :class="{ 'active': activePage === 'livestock' }">
                     <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     <span class="ml-3" x-show="isSidebarOpen">Inventario Ganado</span>
                 </a>
-                <a href="#" @click.prevent="activePage = 'personnel'" class="sidebar-link flex items-center py-2 px-4 rounded-lg" :class="{ 'active': activePage === 'personnel' }">
+                <a href="#" @click.prevent="changePage('personnel')" class="sidebar-link flex items-center py-2 px-4 rounded-lg" :class="{ 'active': activePage === 'personnel' }">
                     <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.653-.184-1.268-.5-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.653.184-1.268.5-1.857m0 0a3.001 3.001 0 014.5 0M12 12a3 3 0 100-6 3 3 0 000 6z"></path></svg>
                     <span class="ml-3" x-show="isSidebarOpen">Personal</span>
                 </a>
-                 <a href="#" @click.prevent="activePage = 'tasks'" class="sidebar-link flex items-center py-2 px-4 rounded-lg" :class="{ 'active': activePage === 'tasks' }">
+                 <a href="#" @click.prevent="changePage('tasks')" class="sidebar-link flex items-center py-2 px-4 rounded-lg" :class="{ 'active': activePage === 'tasks' }">
                     <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
                     <span class="ml-3" x-show="isSidebarOpen">Tareas de Finca</span>
                 </a>
-                 <a href="#" @click.prevent="activePage = 'contacts'" class="sidebar-link flex items-center py-2 px-4 rounded-lg" :class="{ 'active': activePage === 'contacts' }">
+                 <a href="#" @click.prevent="changePage('contacts')" class="sidebar-link flex items-center py-2 px-4 rounded-lg" :class="{ 'active': activePage === 'contacts' }">
                     <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21v-2a6 6 0 00-12 0v2"></path></svg>
                     <span class="ml-3" x-show="isSidebarOpen">Contactos</span>
                 </a>
@@ -98,10 +103,13 @@
         <!-- Main content -->
         <div class="flex-1 flex flex-col overflow-hidden">
             <header class="flex justify-between items-center p-4 bg-card-bg border-b">
-                <div>
-                     <button @click="isSidebarOpen = !isSidebarOpen" class="text-gray-500 hover:text-gray-700">
+                <div class="flex items-center">
+                    <button @click="isSidebarOpen = !isSidebarOpen" class="text-gray-500 hover:text-gray-700 md:hidden">
                          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                     </button>
+                    </button>
+                    <button @click="isSidebarOpen = !isSidebarOpen" class="text-gray-500 hover:text-gray-700 hidden md:block">
+                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </button>
                 </div>
                 <div class="flex items-center space-x-4">
                     <span class="font-semibold">Bienvenido, Admin</span>
@@ -109,11 +117,11 @@
                 </div>
             </header>
 
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-main-bg p-8">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-main-bg p-4 sm:p-6 lg:p-8">
                 <!-- Dashboard Page -->
                 <div x-show="activePage === 'dashboard'" x-cloak x-transition>
                     <h1 class="text-3xl font-display text-text-dark mb-6">Dashboard General</h1>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
                         <div class="bg-card-bg p-6 rounded-lg shadow-md flex items-center justify-between">
                             <div><p class="text-sm text-gray-500">Visitantes Web (Mes)</p><p class="text-3xl font-bold">1,420</p></div>
                             <div class="bg-blue-100 p-3 rounded-full"><svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg></div>
@@ -145,45 +153,46 @@
 
                 <!-- Bookings Page -->
                 <div x-show="activePage === 'bookings'" x-cloak x-transition>
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                         <h1 class="text-3xl font-display text-text-dark">Gestión de Reservas</h1>
-                        <button class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-opacity-80 flex items-center gap-2">
+                        <button class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-opacity-80 flex items-center gap-2 w-full sm:w-auto">
                              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                             <span>Añadir Reserva Manual</span>
                         </button>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-md">
                         <h2 class="text-xl font-bold mb-4">Calendario de Disponibilidad</h2>
-                        <!-- Aquí iría un componente de calendario interactivo. Por ahora, una simulación. -->
-                        <div class="grid grid-cols-7 gap-2 text-center text-sm">
-                            <div class="font-bold">LUN</div> <div class="font-bold">MAR</div> <div class="font-bold">MIE</div> <div class="font-bold">JUE</div> <div class="font-bold">VIE</div> <div class="font-bold">SAB</div> <div class="font-bold">DOM</div>
-                            <div class="border rounded p-2 h-24 text-left text-gray-400">26</div>
-                            <div class="border rounded p-2 h-24 text-left text-gray-400">27</div>
-                            <div class="border rounded p-2 h-24 text-left text-gray-400">28</div>
-                            <div class="border rounded p-2 h-24 text-left text-gray-400">29</div>
-                            <div class="border rounded p-2 h-24 text-left text-gray-400">30</div>
-                            <div class="border rounded p-2 h-24 text-left">1 <span class="block bg-green-200 text-green-800 text-xs rounded px-1 mt-1">2 Reservas</span></div>
-                            <div class="border rounded p-2 h-24 text-left">2</div>
-                            <div class="border rounded p-2 h-24 text-left bg-blue-50">3</div>
-                            <div class="border rounded p-2 h-24 text-left">4 <span class="block bg-red-200 text-red-800 text-xs rounded px-1 mt-1">Completo</span></div>
+                        <div class="overflow-x-auto">
+                            <div class="grid grid-cols-7 gap-1 text-center text-xs sm:text-sm min-w-[500px]">
+                                <div class="font-bold p-2">LUN</div> <div class="font-bold p-2">MAR</div> <div class="font-bold p-2">MIE</div> <div class="font-bold p-2">JUE</div> <div class="font-bold p-2">VIE</div> <div class="font-bold p-2">SAB</div> <div class="font-bold p-2">DOM</div>
+                                <div class="border rounded p-1 sm:p-2 h-24 text-left text-gray-400">26</div>
+                                <div class="border rounded p-1 sm:p-2 h-24 text-left text-gray-400">27</div>
+                                <div class="border rounded p-1 sm:p-2 h-24 text-left text-gray-400">28</div>
+                                <div class="border rounded p-1 sm:p-2 h-24 text-left text-gray-400">29</div>
+                                <div class="border rounded p-1 sm:p-2 h-24 text-left text-gray-400">30</div>
+                                <div class="border rounded p-1 sm:p-2 h-24 text-left">1 <span class="block bg-green-200 text-green-800 text-xs rounded px-1 mt-1">2 Reservas</span></div>
+                                <div class="border rounded p-1 sm:p-2 h-24 text-left">2</div>
+                                <div class="border rounded p-1 sm:p-2 h-24 text-left bg-blue-50">3</div>
+                                <div class="border rounded p-1 sm:p-2 h-24 text-left">4 <span class="block bg-red-200 text-red-800 text-xs rounded px-1 mt-1">Completo</span></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Content Page -->
                 <div x-show="activePage === 'content'" x-cloak x-transition>
-                    <h1 class="text-3xl font-display text-text-dark mb-6">Gestión de Contenido Web</h1>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                        <h1 class="text-3xl font-display text-text-dark">Gestión de Contenido Web</h1>
+                        <button class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-opacity-80 flex items-center gap-2 w-full sm:w-auto">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            <span>Añadir Experiencia</span>
+                        </button>
+                    </div>
                     <div class="space-y-6">
                         <div class="bg-white p-6 rounded-lg shadow-md">
-                            <div class="flex justify-between items-center mb-4">
-                                <h2 class="text-xl font-bold">Experiencias (Tours)</h2>
-                                <button class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-opacity-80 flex items-center gap-2">
-                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                                    <span>Añadir Experiencia</span>
-                                </button>
-                            </div>
+                             <h2 class="text-xl font-bold mb-4">Experiencias (Tours)</h2>
                             <div class="overflow-x-auto">
-                                <table class="w-full text-left">
+                                <table class="w-full text-left min-w-[600px]">
                                     <thead class="bg-gray-50">
                                         <tr>
                                             <th class="p-3">Nombre</th>
@@ -225,16 +234,16 @@
 
                 <!-- Livestock Page -->
                 <div x-show="activePage === 'livestock'" x-cloak x-transition>
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                         <h1 class="text-3xl font-display text-text-dark">Inventario de Ganado</h1>
-                         <button class="bg-secondary-accent text-white px-4 py-2 rounded-lg hover:bg-opacity-80 flex items-center gap-2">
+                         <button class="bg-secondary-accent text-white px-4 py-2 rounded-lg hover:bg-opacity-80 flex items-center gap-2 w-full sm:w-auto">
                              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                             <span>Registrar Animal</span>
                         </button>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-md">
                         <div class="overflow-x-auto">
-                           <table class="w-full text-left">
+                           <table class="w-full text-left min-w-[700px]">
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <th class="p-3">ID (Arete)</th>
@@ -278,16 +287,16 @@
                 
                 <!-- Personnel Page -->
                 <div x-show="activePage === 'personnel'" x-cloak x-transition>
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                         <h1 class="text-3xl font-display text-text-dark">Gestión de Personal</h1>
-                         <button class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-opacity-80 flex items-center gap-2">
+                         <button class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-opacity-80 flex items-center gap-2 w-full sm:w-auto">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
                             <span>Añadir Personal</span>
                         </button>
                     </div>
                      <div class="bg-white p-6 rounded-lg shadow-md">
                         <div class="overflow-x-auto">
-                           <table class="w-full text-left">
+                           <table class="w-full text-left min-w-[600px]">
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <th class="p-3">Nombre</th>
@@ -320,14 +329,14 @@
 
                 <!-- Tasks Page -->
                 <div x-show="activePage === 'tasks'" x-cloak x-transition>
-                     <div class="flex justify-between items-center mb-6">
+                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                         <h1 class="text-3xl font-display text-text-dark">Planificador de Tareas</h1>
-                        <button class="bg-secondary-accent text-white px-4 py-2 rounded-lg hover:bg-opacity-80 flex items-center gap-2">
+                        <button class="bg-secondary-accent text-white px-4 py-2 rounded-lg hover:bg-opacity-80 flex items-center gap-2 w-full sm:w-auto">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                             <span>Nueva Tarea</span>
                         </button>
                     </div>
-                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="bg-white rounded-lg shadow-md p-4">
                             <h3 class="font-bold text-lg mb-4 text-center border-b pb-2">Pendiente</h3>
                             <div class="space-y-3">
@@ -364,16 +373,16 @@
                 
                 <!-- Contacts Page -->
                 <div x-show="activePage === 'contacts'" x-cloak x-transition>
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                         <h1 class="text-3xl font-display text-text-dark">Gestión de Contactos (CRM)</h1>
-                         <button class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-opacity-80 flex items-center gap-2">
+                         <button class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-opacity-80 flex items-center gap-2 w-full sm:w-auto">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
                             <span>Añadir Contacto</span>
                         </button>
                     </div>
                      <div class="bg-white p-6 rounded-lg shadow-md">
                         <div class="overflow-x-auto">
-                           <table class="w-full text-left">
+                           <table class="w-full text-left min-w-[600px]">
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <th class="p-3">Nombre</th>
@@ -416,21 +425,28 @@
 
                 init() {
                     // Establecer el estado inicial de la barra lateral según el tamaño de la pantalla
-                    this.isSidebarOpen = window.innerWidth > 1024;
+                    this.isSidebarOpen = window.innerWidth >= 768;
                     
                     // Vigilar cuando la página activa cambia para inicializar los gráficos
                     this.$watch('activePage', (value) => {
                         if (value === 'dashboard' && !this.chartsInitialized) {
                             // Usar $nextTick asegura que el canvas sea visible antes de dibujar el gráfico
-                            this.$nextTick(() => {
-                                this.initCharts();
-                            });
+                            this.$nextTick(() => this.initCharts());
                         }
                     });
 
                     // Carga inicial de gráficos si la página por defecto es el dashboard
                     if (this.activePage === 'dashboard') {
-                        this.initCharts();
+                        // Un pequeño retraso para asegurar que la transición de Alpine termine
+                        setTimeout(() => this.initCharts(), 50);
+                    }
+                },
+
+                changePage(page) {
+                    this.activePage = page;
+                    // Si la pantalla es de tamaño móvil, cerrar la barra lateral al cambiar de página
+                    if (window.innerWidth < 768) {
+                        this.isSidebarOpen = false;
                     }
                 },
 
@@ -479,3 +495,5 @@
     </script>
 </body>
 </html>
+
+
